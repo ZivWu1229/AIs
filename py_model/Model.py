@@ -16,7 +16,7 @@ class Model():
         #spawn output layer
         self.nodes.append([])
         for _ in range(outputs):
-            self.nodes[-1].append(Node.Node([random()]*len(self.nodes[-2]),random()))
+            self.nodes[-1].append(Node.OutputNode([random()]*len(self.nodes[-2]),random()))
     def run(self,inputs:list):
         #input
         for i in range(len(self.nodes[0])):
@@ -25,7 +25,8 @@ class Model():
         for i in range(1,len(self.nodes)-1):
             for j in range(len(self.nodes[i])):
                 self.nodes[i][j].input(list(map(lambda x:x.get_output(),self.nodes[i-1])))
-                print(self.nodes[i][j].get_output())
+                #print(list(map(lambda x:x.get_output(),self.nodes[i-1])))
+                #print(self.nodes[i][j].get_output())
         #output
         for i in range(len(self.nodes[-1])):
             self.nodes[-1][i].input(list(map(lambda x:x.get_output(),self.nodes[-2])))

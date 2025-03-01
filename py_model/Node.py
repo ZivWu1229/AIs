@@ -7,14 +7,19 @@ class Node():
     weights=[]
     #inputs=[]
     bias=0
+    __output=0
     def __init__(self,weights:list,bias:float):
         self.weights=weights
         self.bias=bias
     def input(self,inputs:list):
-        self.__output=sum(map(lambda x,y:x*y,inputs,self.weights))+self.bias
-    def get_output(self)->float:
+        #print(inputs,self.weights)
+        self.__output=sum(map(lambda x,y:x*y,inputs,self.weights))-self.bias
+    def get_raw_output(self)->float:
         return self.__output
-        #return sigmoid(self.__output)
+    def get_output(self)->float:
+        #return self.__output
+        #print(self.__output)
+        return sigmoid(self.__output)
     def get_data(self)->tuple:
         return (self.weights,self.bias)
     def load_data(self,data:tuple):
@@ -32,4 +37,4 @@ class InputNode(Node):
 
 class OutputNode(Node):
     def get_output(self):
-        return self.__output
+        return super().get_output()
