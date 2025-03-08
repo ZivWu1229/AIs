@@ -1,6 +1,7 @@
 from Model import Model
+import csv
 
-model=Model(20,3,1,4)
+model=Model(20,6,1,4)
 
 H1=([\
 0.05,0.00,0.00,0.00,\
@@ -45,8 +46,32 @@ del i
 
 #print(test_case)
 
-model.load_data([[],[H1,H2,H3],[Z1,Z2,Z3,Z4]])
+#model.load_data([[],[H1,H2,H3],[Z1,Z2,Z3,Z4]])
 #model.run(test_case)
 
-print(model.run(test_case))
-#print(model.get_model_data())
+#print(model.run(test_case))
+
+test_case=[]
+answer=[]
+
+with open('d:\\code\\python\\AIs\\py_model\\chr_img.csv','r') as file:
+    csvFile=csv.reader(file)
+    for line in csvFile:
+        test_case.append(list(map(lambda x:int(x),line[1:])))
+
+with open('d:\\code\\python\\AIs\\py_model\\teacher.csv','r') as file:
+    csvFile=csv.reader(file)
+    for line in csvFile:
+        answer.append(list(map(lambda x:int(x),line)))
+
+
+import matplotlib.pyplot as plt
+half=len(test_case)//2
+plt.plot(model.learn(test_case[:half],answer[:half],test_case[half:],answer[half:],0.05,5000))
+plt.show()
+quit()
+
+for i in range(len(test_case)):
+    result=model.run(test_case[i])
+    error=sum(map(lambda x,y:(x-y)**2,result,answer[i]))
+    print(result,answer[i],error)

@@ -20,9 +20,9 @@ class Node():
         #return self.__output
         #print(self.__output)
         return sigmoid(self.__output)
-    def get_data(self)->tuple:
-        return (self.weights,self.bias)
-    def load_data(self,data:tuple):
+    def get_data(self):
+        return [self.weights,self.bias]
+    def load_data(self,data):
         self.weights=data[0]
         self.bias=data[1]
 
@@ -36,5 +36,4 @@ class InputNode(Node):
         return self.__input
 
 class OutputNode(Node):
-    def get_output(self):
-        return super().get_output()
+    pass
