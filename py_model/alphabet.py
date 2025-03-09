@@ -1,7 +1,8 @@
 from Model import Model
-import csv
+import csv,json,os.path
 
-model=Model(20,6,1,4)
+model=Model(20,3,1,4)
+
 
 H1=([\
 0.05,0.00,0.00,0.00,\
@@ -43,35 +44,53 @@ while len(test_case)>i:
             i+=1
 
 del i
-
 #print(test_case)
 
-#model.load_data([[],[H1,H2,H3],[Z1,Z2,Z3,Z4]])
+model.load_data([[],[H1,H2,H3],[Z1,Z2,Z3,Z4]])
 #model.run(test_case)
 
 #print(model.run(test_case))
 
+def convert_to_int(lst):
+    if isinstance(lst, list):
+        return [convert_to_int(item) for item in lst]
+    return int(lst)  # Replace non-list elements with 0
+
 test_case=[]
 answer=[]
+model_data=[]
 
-with open('d:\\code\\python\\AIs\\py_model\\chr_img.csv','r') as file:
+with open('d:\\code\\python\\AIs\\py_model\\alphabet\\chr_img.csv','r') as file:
     csvFile=csv.reader(file)
     for line in csvFile:
         test_case.append(list(map(lambda x:int(x),line[1:])))
 
-with open('d:\\code\\python\\AIs\\py_model\\teacher.csv','r') as file:
+with open('d:\\code\\python\\AIs\\py_model\\alphabet\\teacher.csv','r') as file:
     csvFile=csv.reader(file)
     for line in csvFile:
         answer.append(list(map(lambda x:int(x),line)))
 
 
+
 import matplotlib.pyplot as plt
 half=len(test_case)//2
-plt.plot(model.learn(test_case[:half],answer[:half],test_case[half:],answer[half:],0.05,5000))
-plt.show()
-quit()
+learning_report=[]
+min_point=0
+g=model.learn(test_case[:half],answer[:half],test_case[half:],answer[half:],0.01,5000)
+while True:
+    
+    report=next(g)
+    if report==-1:
+        break
+    learning_report.append(report)
+    if report[0]<learning_report[min_point][0]:
+        min_point=len(learning_report)-1
+plt.plot(list(map(lambda x:x[0],learning_report)))
 
-for i in range(len(test_case)):
-    result=model.run(test_case[i])
-    error=sum(map(lambda x,y:(x-y)**2,result,answer[i]))
-    print(result,answer[i],error)
+
+print(f'Choosing the data with the lowest error of {learning_report[min_point][0]} for the final result.')
+
+
+with open('d:\\code\\python\\AIs\\py_model\\alphabet\\model_data.json', 'w', newline='') as file:
+    file.write(json.dumps(learning_report[min_point][1]))
+plt.show()

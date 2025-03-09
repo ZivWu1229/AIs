@@ -102,8 +102,10 @@ class Model():
                 self.run(test_cases[case])
                 error+=self.get_error(test_answers[case])
             print(f'Learned {count+1} times, total error is {error}.')
+            yield [error,self.get_model_data()]
             error_report.append(error)
         #self.run()
         
         print(f'Learning completed after {cal_count} times, total error is {error}.')
-        return error_report
+        yield -1
+        #return error_report
