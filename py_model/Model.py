@@ -12,7 +12,7 @@ def replace_with_zero(lst):
     return 0  # Replace non-list elements with 0
 
 class Model():
-    nodes=[]#nodes[0]=input layer   nodes[len(nodes)-1]=output layer
+    nodes=[]#nodes[0]=input layer   nodes[-1]=output layer
     def __init__(self,inputs:int,hiddenLayerNodes:int,hiddenLayers:int,outputs:int):
         #spawn input layer
         self.nodes.append([])
@@ -109,3 +109,16 @@ class Model():
         print(f'Learning completed after {cal_count} times, total error is {error}.')
         yield -1
         #return error_report
+
+class RecurrentModel(Model):
+    def __init__(self, inputs, hiddenLayerNodes, hiddenLayers, outputs):
+        super().__init__(inputs+hiddenLayerNodes, hiddenLayerNodes, hiddenLayers, outputs)
+    def run(self,inputs:list[list]):
+        inputs[0].extend([0]*len(self.nodes[1]))
+        super().run(inputs[0])
+        result=list(map(lambda x:x.get_output(),self.nodes[-2]))
+
+        for input in inputs[1:]:
+            input.extend(result)
+            super().run(input)
+        return list(map(lambda x:x.get_output(),self.nodes[-1]))
