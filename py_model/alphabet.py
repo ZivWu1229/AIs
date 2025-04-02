@@ -1,7 +1,7 @@
-from Model import Model
+from Model import BasicModel
 import csv,json,os.path
 
-model=Model(20,3,1,4)
+model=BasicModel(20,3,1,4)
 
 
 H1=([\
@@ -60,12 +60,12 @@ test_case=[]
 answer=[]
 model_data=[]
 
-with open('d:\\code\\python\\AIs\\py_model\\alphabet\\chr_img.csv','r') as file:
+with open('py_model\\alphabet\\chr_img.csv','r') as file:
     csvFile=csv.reader(file)
     for line in csvFile:
         test_case.append(list(map(lambda x:int(x),line[1:])))
 
-with open('d:\\code\\python\\AIs\\py_model\\alphabet\\teacher.csv','r') as file:
+with open('py_model\\alphabet\\teacher.csv','r') as file:
     csvFile=csv.reader(file)
     for line in csvFile:
         answer.append(list(map(lambda x:int(x),line)))
@@ -91,6 +91,6 @@ plt.plot(list(map(lambda x:x[0],learning_report)))
 print(f'Choosing the data with the lowest error of {learning_report[min_point][0]} for the final result.')
 
 
-with open('d:\\code\\python\\AIs\\py_model\\alphabet\\model_data.json', 'w', newline='') as file:
+with open('py_model\\alphabet\\model_data.json', 'w', newline='') as file:
     file.write(json.dumps(learning_report[min_point][1]))
 plt.show()

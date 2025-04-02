@@ -30,10 +30,13 @@ class InputNode(Node):
     __input=0
     def __init__(self):
         pass
-    def input(self,inputs:float):
-        self.__input=inputs
+    def input(self,input:float):
+        self.__input=input
     def get_output(self):
         return self.__input
 
 class OutputNode(Node):
+    pass
+
+class RecurrentNode(InputNode):
     pass

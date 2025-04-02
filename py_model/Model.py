@@ -27,20 +27,26 @@ class Model():
         self.nodes.append([])
         for _ in range(outputs):
             self.nodes[-1].append(Node.OutputNode([random()]*len(self.nodes[-2]),random()))
-    def run(self,inputs:list):
+    def input(self,inputs:list):
         #input
         for i in range(len(self.nodes[0])):
+            if type(self.nodes[0][i])==Node.RecurrentNode:
+                break
             self.nodes[0][i].input(inputs[i])
+    def hidden(self):
         #run hidden layers
         for i in range(1,len(self.nodes)-1):
             for j in range(len(self.nodes[i])):
                 self.nodes[i][j].input(list(map(lambda x:x.get_output(),self.nodes[i-1])))
-                #print(list(map(lambda x:x.get_output(),self.nodes[i-1])))
-                #print(self.nodes[i][j].get_output())
+    def output(self):
         #output
         for i in range(len(self.nodes[-1])):
             self.nodes[-1][i].input(list(map(lambda x:x.get_output(),self.nodes[-2])))
         return list(map(lambda x:x.get_output(),self.nodes[-1]))
+    def run(self,inputs):
+        self.input(inputs)
+        self.hidden()
+        self.output()
     def get_error(self,answer):
         error=0
         for node in range(len(self.nodes[-1])):
@@ -110,15 +116,34 @@ class Model():
         yield -1
         #return error_report
 
+class BasicModel(Model):
+    pass
+
 class RecurrentModel(Model):
     def __init__(self, inputs, hiddenLayerNodes, hiddenLayers, outputs):
-        super().__init__(inputs+hiddenLayerNodes, hiddenLayerNodes, hiddenLayers, outputs)
+        super().__init__(inputs, hiddenLayerNodes, hiddenLayers, outputs)
+        self.nodes[0].extend([Node.RecurrentNode()]*hiddenLayerNodes)
+    def hidden(self):
+        recurrent_index=len(self.nodes[-2])
+        #run hidden layers
+        for i in range(1,len(self.nodes)-1):
+            for j in range(len(self.nodes[i])):
+                if i==1:
+                    input=list(map(lambda x:x.get_output(),self.nodes[0][:-recurrent_index]))
+                    input.append(self.nodes[0][-recurrent_index+j].get_output())
+                else:
+                    input=list(map(lambda x:x.get_output(),self.nodes[i-1]))
+                self.nodes[i][j].input(input)
     def run(self,inputs:list[list]):
-        inputs[0].extend([0]*len(self.nodes[1]))
-        super().run(inputs[0])
-        result=list(map(lambda x:x.get_output(),self.nodes[-2]))
-
-        for input in inputs[1:]:
-            input.extend(result)
-            super().run(input)
+        for i in range(len(self.nodes[0])):
+            if type(self.nodes[0][i])==Node.RecurrentNode:
+                self.nodes[0][i].input(0)
+        for input in inputs:
+            super().input(input)
+            self.hidden()
+            results=list(map(lambda x:x.get_output(),self.nodes[-2]))#get hidden layer outputs for next loop
+            for i in range(len(results)):
+                self.nodes[0][-len(self.nodes[-2]):][i].input(results[i])
+            #map(lambda node,result:node.input(result),self.nodes[0][-len(self.nodes[-2]):],results)#input the result to recurrent node
+        super().output()
         return list(map(lambda x:x.get_output(),self.nodes[-1]))
