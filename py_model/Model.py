@@ -63,6 +63,8 @@ class Model():
         for i in range(1,len(self.nodes)):
             for j in range(len(self.nodes[i])):
                 self.nodes[i][j].load_data(data[i][j])
+
+    #Machine Learning Part
     def learn(self,teach_cases,teach_answers,test_cases,test_answers,step,cal_count):
         
         error=0
@@ -85,8 +87,6 @@ class Model():
                     error+=(teach_answers[case][unit]-self.nodes[-1][unit].get_output())**2
                     output_unit_errors[unit]=-(teach_answers[case][unit]-self.nodes[-1][unit].get_output())*self.nodes[-1][unit].get_output()*(1-self.nodes[-1][unit].get_output())
                     #print(output_unit_errors[unit])
-                    if (type(gradient[-1][unit][0])==int):
-                        pass
                     gradient[-1][unit][0]=list(map(lambda x,y:x.get_output()*output_unit_errors[unit]+y,self.nodes[-2],gradient[-1][unit][0]))#set the weight gradient
                     gradient[-1][unit][1]-=output_unit_errors[unit]#set the bias gradient
                 #hidden layer
@@ -122,7 +122,8 @@ class BasicModel(Model):
 class RecurrentModel(Model):
     def __init__(self, inputs, hiddenLayerNodes, hiddenLayers, outputs):
         super().__init__(inputs, hiddenLayerNodes, hiddenLayers, outputs)
-        self.nodes[0].extend([Node.RecurrentNode()]*hiddenLayerNodes)
+        for _ in range(hiddenLayerNodes):
+            self.nodes[0].extend([Node.RecurrentNode()])
     def hidden(self):
         recurrent_index=len(self.nodes[-2])
         #run hidden layers
@@ -143,7 +144,7 @@ class RecurrentModel(Model):
             self.hidden()
             results=list(map(lambda x:x.get_output(),self.nodes[-2]))#get hidden layer outputs for next loop
             for i in range(len(results)):
-                self.nodes[0][-len(self.nodes[-2]):][i].input(results[i])
+                self.nodes[0][-len(self.nodes[-2])+i].input(results[i])
             #map(lambda node,result:node.input(result),self.nodes[0][-len(self.nodes[-2]):],results)#input the result to recurrent node
         super().output()
         return list(map(lambda x:x.get_output(),self.nodes[-1]))

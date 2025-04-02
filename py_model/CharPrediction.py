@@ -1,4 +1,5 @@
 from Model import RecurrentModel
+import pytest
 
 model=RecurrentModel(3,2,1,3)
 
@@ -11,4 +12,35 @@ Z3=[[10.98,-74.34],-5.70]
 
 model.load_data([[],[H1,H2],[Z1,Z2,Z3]])
 
-print(model.run([[0,1,0],[1,0,0]]))
+#print(model.run([[0,1,0]]))
+
+test_cases=[
+    [[1,0,0],[0,1,0]],
+    [[1,0,0],[0,0,1]],
+    [[0,1,0],[1,0,0]],
+    [[0,1,0],[0,0,1]],
+    [[0,0,1],[1,0,0]],
+    [[0,0,1],[0,1,0]],
+    [[0,0,1]],
+    [[0,1,0]]
+]
+answers=[
+    [0,0,1],
+    [0,1,0],
+    [0,0,1],
+    [1,0,0],
+    [0,1,0],
+    [1,0,0],
+    [0,1,0],
+    [0,0,1]
+]
+def test():
+    for i in range(len(test_cases)):
+        result=model.run(test_cases[i])
+        print(f'Result:{list(map(lambda x:round(x,1),result))}')
+        assert sum(map(lambda x,y:(x-y)<0.1,answers[i],result))==3
+
+if __name__=='__main__':
+    for i in range(len(test_cases)):
+        result=model.run(test_cases[i])
+        print(result)
