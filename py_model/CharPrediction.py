@@ -1,4 +1,4 @@
-from Model import RecurrentModel
+from Model import *
 import pytest
 
 model=RecurrentModel(3,2,1,3)
@@ -40,7 +40,19 @@ def test():
         print(f'Result:{list(map(lambda x:round(x,1),result))}')
         assert sum(map(lambda x,y:(x-y)<0.1,answers[i],result))==3
 
+
 if __name__=='__main__':
-    for i in range(len(test_cases)):
-        result=model.run(test_cases[i])
-        print(result)
+    learn=True
+    #ML
+    if learn:
+        learning=RecurrentLearning(model)
+        learning.learn(test_cases,answers)
+    else:
+    # model.learn(test_cases)
+        for i in range(len(test_cases)):
+            g=model.run(test_cases[0][0])
+            next(g)
+            result=[]
+            for j in range(len(test_cases[i])):
+                result=g.send(test_cases[i][j])
+            print(result)

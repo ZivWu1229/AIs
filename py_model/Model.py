@@ -11,6 +11,9 @@ def replace_with_zero(lst):
         return [replace_with_zero(item) for item in lst]
     return 0  # Replace non-list elements with 0
 
+def sigmoid_prime(sigmoid):
+    return sigmoid*(1-sigmoid)
+
 class Model():
     nodes=[]#nodes[0]=input layer   nodes[-1]=output layer
     def __init__(self,inputs:int,hiddenLayerNodes:int,hiddenLayers:int,outputs:int):
@@ -135,16 +138,64 @@ class RecurrentModel(Model):
                 else:
                     input=list(map(lambda x:x.get_output(),self.nodes[i-1]))
                 self.nodes[i][j].input(input)
-    def run(self,inputs:list[list]):
+    def refresh(self):
         for i in range(len(self.nodes[0])):
             if type(self.nodes[0][i])==Node.RecurrentNode:
                 self.nodes[0][i].input(0)
-        for input in inputs:
+    def run(self,input:list):
+        self.refresh()
+        while True:
             super().input(input)
             self.hidden()
             results=list(map(lambda x:x.get_output(),self.nodes[-2]))#get hidden layer outputs for next loop
+            super().output()
+            input = yield list(map(lambda x:x.get_output(),self.nodes[-1]))
+            if input==0:
+                #print(results)
+                input=yield results
+            if type(input)!=list:
+                break
             for i in range(len(results)):
                 self.nodes[0][-len(self.nodes[-2])+i].input(results[i])
             #map(lambda node,result:node.input(result),self.nodes[0][-len(self.nodes[-2]):],results)#input the result to recurrent node
         super().output()
-        return list(map(lambda x:x.get_output(),self.nodes[-1]))
+    
+    def learn(self, teach_cases, teach_answers=[], test_cases=[], test_answers=[], step=0.05, cal_count=1):
+        #get all recurrent input
+        
+        for case in range(1,len(teach_cases)):
+            g=self.run(teach_cases[case][0])
+            next(g)
+            recurrentInputs=[]
+            for inputNum in range(len(teach_cases[case])):
+                g.send(0)
+                recurrentInputs.append(list(map(lambda x:x.get_output(),self.nodes[-2])))
+                g.send(teach_cases[case][inputNum])
+            #print(recurrentInputs)
+
+
+class RecurrentLearning():
+    def __init__(self,model:RecurrentModel):
+        self.model=model
+    def learn(self,teach_cases,teach_answers):
+        gradient=duplicate_structure(self.model.get_model_data())
+        for case in range(len(teach_cases)):
+            #get recurrent node value
+            g=self.model.run(teach_cases[case][0])
+            next(g)
+            recurrentInputs=[]
+            for inputNum in range(len(teach_cases[case])):
+                g.send(0)
+                recurrentInputs.append(list(map(lambda x:x.get_output(),self.model.nodes[-2])))
+                g.send(teach_cases[case][inputNum])
+            #get unit error of output
+            output_unit_error=[0]*len(self.model.nodes[-1])
+            #set output layer gradient
+            for unit in range(len(self.model.nodes[-1])):
+                #get output unit error
+                output_unit_error[unit]=-2*(teach_answers[case][unit]-self.model.nodes[-1][unit].get_output())*sigmoid_prime(self.model.nodes[-1][unit].get_output())
+                #set gradient
+                gradient[-1][unit][0]=list(map(lambda i:output_unit_error[unit]*recurrentInputs[0][i]+gradient[-1][unit][0][i],list(range(len(self.model.nodes[-2])))))
+                gradient[-1][unit][1]-=output_unit_error[unit]#set the bias gradient
+            #set hidden layer gradient
+            print(gradient)
