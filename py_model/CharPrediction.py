@@ -10,7 +10,7 @@ Z1=[[72.83,90.10],96.13]
 Z2=[[-66.62,-4.67],-12.99]
 Z3=[[10.98,-74.34],-5.70]
 
-model.load_data([[],[H1,H2],[Z1,Z2,Z3]])
+#model.load_data([[],[H1,H2],[Z1,Z2,Z3]])
 
 #print(model.run([[0,1,0]]))
 
@@ -46,7 +46,7 @@ if __name__=='__main__':
     #ML
     if learn:
         learning=RecurrentLearning(model)
-        learning.learn(test_cases,answers)
+        learning.learn(test_cases,answers,cal_count=2000)
     else:
     # model.learn(test_cases)
         for i in range(len(test_cases)):

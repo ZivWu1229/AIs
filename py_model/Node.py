@@ -1,7 +1,15 @@
 import math
 
+# def sigmoid(x):
+#     print(x)
+#     return 1/(1+math.exp(-x))
 def sigmoid(x):
-    return 1/(1+math.exp(-x))
+    if x >= 0:
+        z = math.exp(-x)
+        return 1 / (1 + z)
+    else:
+        z = math.exp(x)
+        return z / (1 + z)
 
 class Node():
     weights=[]
@@ -13,6 +21,7 @@ class Node():
         self.bias=bias
     def input(self,inputs:list):
         #print(inputs,self.weights)
+        # print(inputs,self.weights)
         self.__output=sum(map(lambda x,y:x*y,inputs,self.weights))-self.bias
     def get_raw_output(self)->float:
         return self.__output

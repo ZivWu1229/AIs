@@ -9,7 +9,7 @@ class Stock():
         self.r = requests.post("https://www.cmoney.tw/api/internal/MobileService/ashx/GetDtnoData.ashx", data={"FilterNo": 0,"DtNo": "86489961","action": "getdtnodata","ParamStr":"AssignID=2330;CaptionMode=0;DTRange=1500;"})
         print(self.r.ok)
         print(self.r.json())
-    def make_csv(self,filename='stock.csv'):
+    def make_csv(self,filename='stock\\stock.csv'):
         with open(filename,'w',newline='') as file:
             data=self.r.json()
             writer=csv.writer(file)
