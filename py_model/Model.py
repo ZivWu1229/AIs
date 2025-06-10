@@ -25,7 +25,7 @@ class Model():
         for i in range(1,hiddenLayers+1):
             self.nodes.append([])
             for _ in range(hiddenLayerNodes):
-                self.nodes[i].append(Node.Node([random()*1000]*len(self.nodes[i-1]),random()*1000))
+                self.nodes[i].append(Node.Node([random()]*len(self.nodes[i-1]),random()))
         #spawn output layer
         self.nodes.append([])
         for _ in range(outputs):
