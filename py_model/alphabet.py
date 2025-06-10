@@ -76,7 +76,7 @@ import matplotlib.pyplot as plt
 half=len(test_case)//2
 learning_report=[]
 min_point=0
-g=model.learn(test_case[:half],answer[:half],test_case[half:],answer[half:],0.01,5000)
+g=model.learn(test_case[:half],answer[:half],test_case[half:],answer[half:],0.1,5000)
 while True:
     
     report=next(g)

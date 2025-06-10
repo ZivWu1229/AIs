@@ -1,15 +1,10 @@
 import math
 
-# def sigmoid(x):
+# def activation(x):
 #     print(x)
 #     return 1/(1+math.exp(-x))
-def sigmoid(x):
-    if x >= 0:
-        z = math.exp(-x)
-        return 1 / (1 + z)
-    else:
-        z = math.exp(x)
-        return z / (1 + z)
+def activation(x):
+    return math.tanh(x)
 
 class Node():
     weights=[]
@@ -28,7 +23,7 @@ class Node():
     def get_output(self)->float:
         #return self.__output
         #print(self.__output)
-        return sigmoid(self.__output)
+        return activation(self.__output)
     def get_data(self):
         return [self.weights,self.bias]
     def load_data(self,data):

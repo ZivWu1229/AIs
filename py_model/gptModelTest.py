@@ -6,7 +6,7 @@ def generate_recurrent_data(num_cases, sequence_length, input_size, output_range
     for _ in range(num_cases):
         case = []
         for _ in range(sequence_length):
-            inputs = [random.uniform(0, 1) for _ in range(input_size)]
+            inputs = [random.uniform(-1, 1) for _ in range(input_size)]
             case.append(inputs)
         cases.append(case)
 
@@ -18,16 +18,17 @@ def generate_recurrent_data(num_cases, sequence_length, input_size, output_range
     return cases, answers
 
 # Example usage
-teach_cases, teach_answers = generate_recurrent_data(num_cases=100, sequence_length=5, input_size=3)
+teach_cases, teach_answers = generate_recurrent_data(num_cases=100, sequence_length=5, input_size=1)
 
 
 
 from Model import RecurrentLearning, RecurrentModel
 
-model = RecurrentModel(inputs=1, hiddenLayerNodes=5, hiddenLayers=1, outputs=1)
+model = RecurrentModel(inputs=1, hiddenLayerNodes=3, hiddenLayers=1, outputs=1)
 learning = RecurrentLearning(model)
 
-learning.learn(teach_cases, teach_answers, cal_count=100, step=0.05)
+learning.learn(teach_cases, teach_answers, cal_count=1000, step=0.005)
+learning.learn(teach_cases, teach_answers, cal_count=1000, step=0.0005)
 
 # Show a preview
 for i in range(3):

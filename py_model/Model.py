@@ -1,5 +1,5 @@
 import Node
-from random import random
+import random
 
 def duplicate_structure(lst):
     from copy import deepcopy
@@ -11,8 +11,8 @@ def replace_with_zero(lst):
         return [replace_with_zero(item) for item in lst]
     return 0  # Replace non-list elements with 0
 
-def sigmoid_prime(sigmoid):
-    return sigmoid*(1-sigmoid)
+def derivative(y):
+    return 1-y**2
 
 class Model():
     nodes=[]#nodes[0]=input layer   nodes[-1]=output layer
@@ -25,11 +25,11 @@ class Model():
         for i in range(1,hiddenLayers+1):
             self.nodes.append([])
             for _ in range(hiddenLayerNodes):
-                self.nodes[i].append(Node.Node([random()]*len(self.nodes[i-1]),random()))
+                self.nodes[i].append(Node.Node([random.uniform(-0.05, 0.05)]*len(self.nodes[i-1]),random.uniform(-0.05, 0.05)))
         #spawn output layer
         self.nodes.append([])
         for _ in range(outputs):
-            self.nodes[-1].append(Node.OutputNode([random()]*len(self.nodes[-2]),random()))
+            self.nodes[-1].append(Node.OutputNode([random.uniform(-0.05, 0.05)]*len(self.nodes[-2]),random.uniform(-0.05, 0.05)))
     def input(self,inputs:list):
         #input
         for i in range(len(self.nodes[0])):
@@ -206,7 +206,7 @@ class RecurrentLearning():
                 #set output layer gradient
                 for unit in range(len(self.model.nodes[-1])):
                     #get output unit error
-                    output_unit_error[unit]=-2*(teach_answers[case][unit]-self.model.nodes[-1][unit].get_output())*sigmoid_prime(self.model.nodes[-1][unit].get_output())
+                    output_unit_error[unit]=-2*(teach_answers[case][unit]-self.model.nodes[-1][unit].get_output())*derivative(self.model.nodes[-1][unit].get_output())
                     #set gradient
                     gradient[-1][unit][0]=list(map(lambda i:output_unit_error[unit]*recurrentInputs[0][i]+gradient[-1][unit][0][i],list(range(len(self.model.nodes[-2])))))
                     gradient[-1][unit][1]-=output_unit_error[unit]#set the bias gradient
@@ -226,7 +226,7 @@ class RecurrentLearning():
                         #calculate unit error
                         #print(model_data[1][unit][0][-1]) # recurrent input weight
                         self.model.run_once(teach_cases[case][input],recurrentInputs[input])
-                        hidden_unit_error[unit]*=model_data[1][unit][0][-1]*sigmoid_prime(self.model.nodes[layer][unit].get_output())
+                        hidden_unit_error[unit]*=model_data[1][unit][0][-1]*derivative(self.model.nodes[layer][unit].get_output())
 
                         #calculate gradient
                         tmp_input=teach_cases[case][input]
