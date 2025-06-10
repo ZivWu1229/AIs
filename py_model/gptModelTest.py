@@ -24,10 +24,10 @@ teach_cases, teach_answers = generate_recurrent_data(num_cases=100, sequence_len
 
 from Model import RecurrentLearning, RecurrentModel
 
-model = RecurrentModel(inputs=1, hiddenLayerNodes=3, hiddenLayers=1, outputs=1)
+model = RecurrentModel(inputs=1, hiddenLayerNodes=5, hiddenLayers=1, outputs=1)
 learning = RecurrentLearning(model)
 
-learning.learn(teach_cases, teach_answers, cal_count=50, step=0.05)
+learning.learn(teach_cases, teach_answers, cal_count=100, step=0.05)
 
 # Show a preview
 for i in range(3):

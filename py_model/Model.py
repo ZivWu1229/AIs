@@ -166,18 +166,7 @@ class RecurrentModel(Model):
             #map(lambda node,result:node.input(result),self.nodes[0][-len(self.nodes[-2]):],results)#input the result to recurrent node
         super().output()
     
-    def learn(self, teach_cases, teach_answers=[], test_cases=[], test_answers=[], step=0.05, cal_count=1):
-        #get all recurrent input
-        
-        for case in range(1,len(teach_cases)):
-            g=self.run(teach_cases[case][0])
-            next(g)
-            recurrentInputs=[]
-            for inputNum in range(len(teach_cases[case])):
-                g.send(0)
-                recurrentInputs.append(list(map(lambda x:x.get_output(),self.nodes[-2])))
-                g.send(teach_cases[case][inputNum])
-            #print(recurrentInputs)
+    
 
 
 class RecurrentLearning():
@@ -194,6 +183,7 @@ class RecurrentLearning():
             for j in range(len(teach_cases[i])):
                 g.send(teach_cases[i][j])
             error+=self.model.get_error(teach_answers[i])
+            g.close()
         print(f'Learning started by the initial error of {error}.')
         for i in range(cal_count):
             gradient=duplicate_structure(self.model.get_model_data())
@@ -210,6 +200,7 @@ class RecurrentLearning():
                     g.send(0)
                     recurrentInputs.append(list(map(lambda x:x.get_output(),self.model.nodes[-2])))
                     g.send(teach_cases[case][inputNum])
+                g.close()
                 #get unit error of output
                 output_unit_error=[0]*len(self.model.nodes[-1])
                 #set output layer gradient
@@ -260,6 +251,7 @@ class RecurrentLearning():
                 for j in range(1,len(teach_cases[i])):
                     g.send(teach_cases[i][j])
                 error+=self.model.get_error(teach_answers[i])
+                g.close()
             print(error,self.model.nodes[-1][0].get_output())
         self.model.load_data(best_model)
         print(f'Learning completed after {cal_count} times, total error is {best_error}.')
